@@ -1,0 +1,20 @@
+% disease(Name, ListOfSymptoms)
+
+disease(flu, [fever, cough, headache, sore_throat]).
+disease(cold, [cough, sneezing, runny_nose]).
+disease(malaria, [fever, chills, sweating, headache]).
+disease(diabetes, [frequent_urination, excessive_thirst, fatigue]).
+disease(dengue, [fever, headache, muscle_pain, rash]).
+
+% check_symptoms(PatientSymptoms, DiseaseSymptoms)
+% Succeeds if all DiseaseSymptoms are in PatientSymptoms
+check_symptoms(_, []).
+check_symptoms(PatientSymptoms, [Symptom|Rest]) :-
+    member(Symptom, PatientSymptoms),
+    check_symptoms(PatientSymptoms, Rest).
+
+% diagnose(PatientSymptoms, Disease)
+% Finds diseases that match all symptoms provided
+diagnose(PatientSymptoms, Disease) :-
+    disease(Disease, Symptoms),
+    check_symptoms(PatientSymptoms, Symptoms).
