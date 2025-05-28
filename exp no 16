@@ -1,0 +1,68 @@
+mport numpy as np
+# Sigmoid activation and its derivative
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+def sigmoid_derivative(x):
+    return x * (1 - x)
+class FeedforwardNN:
+    def __init__(self, input_size, hidden_size, output_size, learning_rate=0.5):
+        # Initialize weights with random values
+        self.learning_rate = learning_rate
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        
+        # Weights between input layer and hidden layer
+        self.W1 = np.random.uniform(-1, 1, (self.input_size, self.hidden_size))
+        # Weights between hidden layer and output layer
+        self.W2 = np.random.uniform(-1, 1, (self.hidden_size, self.output_size))
+        
+        # Bias terms
+        self.b1 = np.zeros((1, self.hidden_size))
+        self.b2 = np.zeros((1, self.output_size))
+    def forward(self, X):
+        # Forward propagation
+        self.z1 = np.dot(X, self.W1) + self.b1
+        self.a1 = sigmoid(self.z1)             # Activation in hidden layer
+        self.z2 = np.dot(self.a1, self.W2) + self.b2
+        self.a2 = sigmoid(self.z2)             # Output activation
+        return self.a2
+    def backward(self, X, y, output):
+        # Calculate error
+        error = y - output
+        d_output = error * sigmoid_derivative(output)
+        # Calculate error for hidden layer
+        error_hidden = d_output.dot(self.W2.T)
+        d_hidden = error_hidden * sigmoid_derivative(self.a1)
+        # Update weights and biases
+        self.W2 += self.a1.T.dot(d_output) * self.learning_rate
+        self.b2 += np.sum(d_output, axis=0, keepdims=True) * self.learning_rate
+        self.W1 += X.T.dot(d_hidden) * self.learning_rate
+        self.b1 += np.sum(d_hidden, axis=0, keepdims=True) * self.learning_rate
+    def train(self, X, y, epochs=10000):
+        for epoch in range(epochs):
+            output = self.forward(X)
+            self.backward(X, y, output)
+            if epoch % 1000 == 0:
+                loss = np.mean((y - output) ** 2)
+                print(f"Epoch {epoch}, Loss: {loss:.4f}")
+# Example usage: XOR problem
+# Input data (4 samples, 2 features)
+X = np.array([[0,0],
+              [0,1],
+              [1,0],
+              [1,1]])
+# Expected output (XOR)
+y = np.array([[0],
+              [1],
+              [1],
+              [0]])
+# Create network with 2 input neurons, 2 hidden neurons, 1 output neuron
+nn = FeedforwardNN(input_size=2, hidden_size=2, output_size=1, learning_rate=0.5)
+# Train the network
+nn.train(X, y, epochs=10000)
+# Test network output after training
+print("\nTesting trained network:")
+for x_input in X:
+    output = nn.forward(x_input)
+    print(f"Input: {x_input}, Output: {output.round(3)}")
