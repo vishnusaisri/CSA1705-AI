@@ -1,0 +1,32 @@
+% Facts: parent(Parent, Child).
+parent(john, mary).
+parent(john, michael).
+parent(susan, mary).
+parent(susan, michael).
+parent(mary, alice).
+parent(mary, bob).
+parent(michael, tom).
+
+% Facts: gender (for clarity)
+male(john).
+male(michael).
+male(bob).
+male(tom).
+
+female(susan).
+female(mary).
+female(alice).
+
+% Rules:
+father(F, C) :- parent(F, C), male(F).
+mother(M, C) :- parent(M, C), female(M).
+
+grandparent(GP, GC) :- parent(GP, P), parent(P, GC).
+
+sibling(X, Y) :-
+    parent(P, X),
+    parent(P, Y),
+    X \= Y.
+
+ancestor(A, D) :- parent(A, D).
+ancestor(A, D) :- parent(A, X), ancestor(X, D).
