@@ -1,0 +1,58 @@
+% State representation: state(MonkeyPos, BoxPos, BananaPos, HasBanana)
+% Positions can be: door, window, middle (you can choose any labels)
+
+% Initial state: monkey and box at door, banana at middle, monkey doesn't have banana
+initial_state(state(door, door, middle, no)).
+
+% Goal state: monkey has banana
+goal_state(state(_, _, _, yes)).
+
+% Actions:
+% move(MonkeyPos, NewPos)
+action(state(MonkeyPos, BoxPos, BananaPos, HasBanana),
+       move(NewPos),
+       state(NewPos, BoxPos, BananaPos, HasBanana)) :-
+    MonkeyPos \= NewPos,
+    member(NewPos, [door, window, middle]).
+
+% push_box(MonkeyPos, BoxPos, NewBoxPos)
+action(state(MonkeyPos, BoxPos, BananaPos, HasBanana),
+       push_box(NewBoxPos),
+       state(NewBoxPos, NewBoxPos, BananaPos, HasBanana)) :-
+    MonkeyPos = BoxPos,
+    MonkeyPos \= NewBoxPos,
+    member(NewBoxPos, [door, window, middle]).
+
+% climb_box
+action(state(MonkeyPos, BoxPos, BananaPos, HasBanana),
+       climb,
+       state(MonkeyPos, BoxPos, BananaPos, HasBanana)) :-
+    MonkeyPos = BoxPos.
+
+% grab_banana
+action(state(MonkeyPos, BoxPos, BananaPos, no),
+       grab,
+       state(MonkeyPos, BoxPos, BananaPos, yes)) :-
+    MonkeyPos = BananaPos,
+    MonkeyPos = BoxPos.
+
+% Solve by searching for sequence of actions from initial to goal state
+
+solve :-
+    initial_state(Initial),
+    goal_state(Goal),
+    path(Initial, Goal, [Initial], Actions),
+    write('Solution steps:'), nl,
+    print_actions(Actions).
+
+% Path search: path(CurrentState, GoalState, VisitedStates, Actions)
+path(State, State, _, []).
+path(State, Goal, Visited, [Action|Actions]) :-
+    action(State, Action, NewState),
+    \+ member(NewState, Visited),
+    path(NewState, Goal, [NewState|Visited], Actions).
+
+print_actions([]).
+print_actions([A|T]) :-
+    writeln(A),
+    print_actions(T).
