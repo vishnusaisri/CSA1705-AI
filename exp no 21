@@ -1,0 +1,15 @@
+% towers_of_hanoi(NumberOfDisks, Source, Auxiliary, Destination)
+
+towers_of_hanoi(0, _, _, _) :- !.  % Base case: no disks to move
+
+towers_of_hanoi(N, Source, Auxiliary, Destination) :-
+    N > 0,
+    M is N - 1,
+    % Move top M disks from Source to Auxiliary
+    towers_of_hanoi(M, Source, Destination, Auxiliary),
+
+    % Move the largest disk from Source to Destination
+    format('Move disk ~w from ~w to ~w~n', [N, Source, Destination]),
+
+    % Move the M disks from Auxiliary to Destination
+    towers_of_hanoi(M, Auxiliary, Source, Destination).
