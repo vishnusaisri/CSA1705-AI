@@ -1,0 +1,21 @@
+% bird(Name, can_fly).
+bird(sparrow, yes).
+bird(penguin, no).
+bird(eagle, yes).
+bird(ostrich, no).
+bird(parrot, yes).
+bird(kiwi, no).
+
+% rule to check if a bird can fly
+can_fly(Bird) :-
+    bird(Bird, yes).
+
+can_fly(Bird) :-
+    bird(Bird, no),
+    format('~w cannot fly.~n', [Bird]),
+    fail.
+
+can_fly(Bird) :-
+    \+ bird(Bird, _),
+    format('Bird ~w not found in database.~n', [Bird]),
+    fail.
