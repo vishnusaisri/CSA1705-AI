@@ -1,0 +1,84 @@
+import math
+from collections import Counter
+def entropy(data, target_attr):
+    values = [record[target_attr] for record in data]
+    freq = Counter(values)
+    total = len(data)
+    ent = 0.0
+    for count in freq.values():
+        p = count / total
+        ent -= p * math.log2(p)
+    return ent
+def information_gain(data, attr, target_attr):
+    total_entropy = entropy(data, target_attr)
+    values = set(record[attr] for record in data)
+    total = len(data)
+    subset_entropy = 0.0
+    for val in values:
+        subset = [record for record in data if record[attr] == val]
+        p = len(subset) / total
+        subset_entropy += p * entropy(subset, target_attr)
+    return total_entropy - subset_entropy
+def majority_class(data, target_attr):
+    freq = Counter(record[target_attr] for record in data)
+    return freq.most_common(1)[0][0]
+def id3(data, attributes, target_attr):
+    # If all records have the same class, return that class
+    classes = [record[target_attr] for record in data]
+    if classes.count(classes[0]) == len(classes):
+        return classes[0]
+    # If no attributes left, return majority class
+    if not attributes:
+        return majority_class(data, target_attr)
+    # Select attribute with highest info gain
+    gains = [(attr, information_gain(data, attr, target_attr)) for attr in attributes]
+    best_attr, best_gain = max(gains, key=lambda x: x[1])
+    tree = {best_attr: {}}
+    # Remaining attributes without best_attr
+    remaining_attrs = [a for a in attributes if a != best_attr]
+    for val in set(record[best_attr] for record in data):
+        subset = [record for record in data if record[best_attr] == val]
+        if not subset:
+            tree[best_attr][val] = majority_class(data, target_attr)
+        else:
+            subtree = id3(subset, remaining_attrs, target_attr)
+            tree[best_attr][val] = subtree
+    return tree
+def classify(tree, sample):
+    if not isinstance(tree, dict):
+        return tree
+    attr = next(iter(tree))
+    value = sample.get(attr)
+    if value in tree[attr]:
+        return classify(tree[attr][value], sample)
+    else:
+        # If value not seen during training, return None or handle default
+        return None
+# Example dataset
+data = [
+    {'Outlook': 'Sunny', 'Temperature': 'Hot', 'Humidity': 'High', 'Wind': 'Weak', 'PlayTennis': 'No'},
+    {'Outlook': 'Sunny', 'Temperature': 'Hot', 'Humidity': 'High', 'Wind': 'Strong', 'PlayTennis': 'No'},
+    {'Outlook': 'Overcast', 'Temperature': 'Hot', 'Humidity': 'High', 'Wind': 'Weak', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Rain', 'Temperature': 'Mild', 'Humidity': 'High', 'Wind': 'Weak', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Rain', 'Temperature': 'Cool', 'Humidity': 'Normal', 'Wind': 'Weak', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Rain', 'Temperature': 'Cool', 'Humidity': 'Normal', 'Wind': 'Strong', 'PlayTennis': 'No'},
+    {'Outlook': 'Overcast', 'Temperature': 'Cool', 'Humidity': 'Normal', 'Wind': 'Strong', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Sunny', 'Temperature': 'Mild', 'Humidity': 'High', 'Wind': 'Weak', 'PlayTennis': 'No'},
+    {'Outlook': 'Sunny', 'Temperature': 'Cool', 'Humidity': 'Normal', 'Wind': 'Weak', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Rain', 'Temperature': 'Mild', 'Humidity': 'Normal', 'Wind': 'Weak', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Sunny', 'Temperature': 'Mild', 'Humidity': 'Normal', 'Wind': 'Strong', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Overcast', 'Temperature': 'Mild', 'Humidity': 'High', 'Wind': 'Strong', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Overcast', 'Temperature': 'Hot', 'Humidity': 'Normal', 'Wind': 'Weak', 'PlayTennis': 'Yes'},
+    {'Outlook': 'Rain', 'Temperature': 'Mild', 'Humidity': 'High', 'Wind': 'Strong', 'PlayTennis': 'No'}
+]
+attributes = ['Outlook', 'Temperature', 'Humidity', 'Wind']
+target_attr = 'PlayTennis'
+# Build decision tree
+tree = id3(data, attributes, target_attr)
+print("Decision Tree:")
+print(tree)
+# Test classification
+test_sample = {'Outlook': 'Sunny', 'Temperature': 'Cool', 'Humidity': 'High', 'Wind': 'Strong'}
+result = classify(tree, test_sample)
+print("\nTest Sample:", test_sample)
+print("Predicted Class:", result)
