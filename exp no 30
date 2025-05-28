@@ -1,0 +1,21 @@
+% Basic facts
+sunny.
+have_umbrella.
+
+% Rules (inference logic)
+can_go_outside :- 
+    sunny, 
+    have_umbrella.
+
+take_sunscreen :- 
+    sunny.
+
+play_sports :- 
+    can_go_outside.
+
+% Additional rules
+can_go_for_walk :-
+    can_go_outside,
+    \+ raining.
+
+raining :- fail.  % For this example, assume it's not raining
