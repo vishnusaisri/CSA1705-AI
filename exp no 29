@@ -1,0 +1,33 @@
+:- dynamic fact/1.
+
+% Initial facts
+fact(sunny).
+fact(have_umbrella).
+
+% Inference rules
+rule(go_outside) :-
+    fact(sunny),
+    fact(have_umbrella),
+    \+ fact(go_outside),
+    assertz(fact(go_outside)),
+    write('Inferred: go_outside'), nl.
+
+rule(take_sunscreen) :-
+    fact(sunny),
+    \+ fact(take_sunscreen),
+    assertz(fact(take_sunscreen)),
+    write('Inferred: take_sunscreen'), nl.
+
+% Forward chaining engine
+forward :-
+    rule(Rule),
+    Rule,
+    fail.  % keep going
+forward.
+
+% Show all current facts
+show_facts :-
+    fact(F),
+    write(F), nl,
+    fail.
+show_facts.
