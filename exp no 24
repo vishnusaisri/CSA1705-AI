@@ -1,0 +1,17 @@
+% diet(Disease, RecommendedDiet).
+
+diet(diabetes, 'Low sugar, high fiber diet').
+diet(hypertension, 'Low salt, DASH diet').
+diet(obesity, 'Calorie controlled, balanced diet').
+diet(anemia, 'Iron-rich diet with vitamin C').
+diet(celiac, 'Gluten-free diet').
+diet(heart_disease, 'Low fat, low cholesterol diet').
+
+% rule to suggest diet based on disease
+suggest_diet(Disease) :-
+    diet(Disease, Diet),
+    format('Recommended diet for ~w is: ~w.~n', [Disease, Diet]).
+
+suggest_diet(Disease) :-
+    \+ diet(Disease, _),
+    format('Sorry, no diet information available for ~w.~n', [Disease]).
