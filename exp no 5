@@ -1,0 +1,46 @@
+ from collections import deque
+
+def is_valid(state):
+    m_left, c_left, m_right, c_right = state
+    if m_left < 0 or c_left < 0 or m_right < 0 or c_right < 0:
+        return False
+    if (m_left > 0 and m_left < c_left) or (m_right > 0 and m_right < c_right):
+        return False
+    return True
+
+def missionaries_cannibals_bfs():
+    initial_state = (3, 3, 0, 0)  # (Missionaries left, Cannibals left, Missionaries right, Cannibals right)
+    goal_state = (0, 0, 3, 3)
+    visited = set()
+    queue = deque([(initial_state, [])])  # State and path
+    
+    while queue:
+        current_state, path = queue.popleft()
+        
+        if current_state in visited:
+            continue
+        visited.add(current_state)
+        
+        if current_state == goal_state:
+            return path + [current_state]
+        
+        m_left, c_left, m_right, c_right = current_state
+        possible_moves = [
+            (m_left - 2, c_left, m_right + 2, c_right),  # Two missionaries
+            (m_left, c_left - 2, m_right, c_right + 2),  # Two cannibals
+            (m_left - 1, c_left - 1, m_right + 1, c_right + 1),  # One missionary, one cannibal
+            (m_left - 1, c_left, m_right + 1, c_right),  # One missionary
+            (m_left, c_left - 1, m_right, c_right + 1)   # One cannibal
+        ]
+        
+        for new_state in possible_moves:
+            if is_valid(new_state) and new_state not in visited:
+                queue.append((new_state, path + [current_state]))
+
+# Example usage:
+solution = missionaries_cannibals_bfs()
+if solution:
+    for step in solution:
+        print(step)
+else:
+    print("No solution found.")
