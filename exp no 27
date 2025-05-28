@@ -1,0 +1,36 @@
+% best_first_search(Start, Goal, Path) finds Path from Start to Goal.
+
+% edge(Node1, Node2, Cost).
+edge(a, b, 1).
+edge(a, c, 4).
+edge(b, d, 2).
+edge(c, d, 5).
+edge(b, e, 12).
+edge(d, e, 3).
+
+% heuristic(Node, HValue) - estimated cost from Node to goal.
+heuristic(a, 7).
+heuristic(b, 6).
+heuristic(c, 2).
+heuristic(d, 1).
+heuristic(e, 0).
+
+% Best First Search main predicate
+best_first_search(Start, Goal, Path) :-
+    heuristic(Start, H),
+    bfs([[Start, [Start], H]], Goal, RevPath),
+    reverse(RevPath, Path).
+
+% bfs(OpenList, Goal, Path)
+% OpenList: list of [Node, PathToNode, HeuristicValue]
+bfs([[Goal, Path, _]|_], Goal, Path).  % Goal reached
+
+bfs(OpenList, Goal, Path) :-
+    OpenList = [[CurrentNode, CurrentPath, _]|RestOpen],
+    findall([NextNode, [NextNode|CurrentPath], Hn],
+            (edge(CurrentNode, NextNode, _), \+ member(NextNode, CurrentPath),
+             heuristic(NextNode, Hn)),
+            NextNodes),
+    append(RestOpen, NextNodes, NewOpenUnsorted),
+    sort(3, @=<, NewOpenUnsorted, NewOpen),  % sort by heuristic ascending
+    bfs(NewOpen, Goal, Path).
