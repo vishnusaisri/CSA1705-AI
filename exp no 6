@@ -1,0 +1,29 @@
+def vacuum_cleaner(environment, location):
+    actions = []
+    state = environment.copy()
+
+    while 'Dirty' in state.values():
+        if state[location] == 'Dirty':
+            actions.append(f"Suck in {location}")
+            state[location] = 'Clean'
+        else:
+            location = 'B' if location == 'A' else 'A'
+            actions.append(f"Move to {location}")
+
+    return actions, state
+
+def main():
+    environment = {'A': 'Dirty', 'B': 'Dirty'}
+    location = 'A'
+    
+    actions, final_state = vacuum_cleaner(environment, location)
+    
+    print("Actions taken:")
+    for action in actions:
+        print(action)
+    
+    print("\nFinal environment state:")
+    print(final_state)
+
+if __name__ == "__main__":
+    main()
