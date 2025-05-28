@@ -1,0 +1,27 @@
+from itertools import permutations
+def solve_cryptarithm(words, result):
+    unique_chars = set("".join(words) + result)
+    
+    if len(unique_chars) > 10:
+        print("Too many unique characters! Cannot map to digits.")
+        return
+    
+    for perm in permutations(range(10), len(unique_chars)):
+        char_digit_map = dict(zip(unique_chars, perm))
+        
+        if any(char_digit_map[word[0]] == 0 for word in words + [result]):
+            continue  # Skip cases where a number starts with 0
+        
+        num_words = [int("".join(str(char_digit_map[c]) for c in word)) for word in words]
+        num_result = int("".join(str(char_digit_map[c]) for c in result))
+        
+        if sum(num_words) == num_result:
+            print("Solution Found!")
+            print(char_digit_map)
+            return
+    
+    print("No solution found.")
+# Example usage:
+words = ["SEND", "MORE"]
+result = "MONEY"
+solve_cryptarithm(words, result)
