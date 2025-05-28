@@ -1,0 +1,6 @@
+% person(Name, dob(Year, Month, Day)) facts
+
+person(john, dob(1990, 5, 12)).
+person(mary, dob(1985, 8, 23)).
+person(alex, dob(2000, 1, 30)).
+person(susan, dob(1995, 12, 7)).
