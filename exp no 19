@@ -1,0 +1,19 @@
+% student(StudentID, StudentName).
+student(1, alice).
+student(2, bob).
+student(3, charlie).
+
+% teacher(TeacherID, TeacherName).
+teacher(101, mr_smith).
+teacher(102, ms_jones).
+
+% subject(SubCode, SubjectName, TeacherID).
+subject(cs101, 'Computer Science', 101).
+subject(math201, 'Mathematics', 102).
+subject(phy301, 'Physics', 101).
+
+% enrolled(StudentID, SubCode).
+enrolled(1, cs101).
+enrolled(1, math201).
+enrolled(2, cs101).
+enrolled(3, phy301).
